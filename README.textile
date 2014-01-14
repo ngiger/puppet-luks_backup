@@ -1,0 +1,36 @@
+h1. luks_backup module for Puppet
+
+Puppet module for running encrypted backup via ssh to a Rasperry PI
+
+h2. Examples
+
+* To install the luks_backup:
+
+    @class { 'luks_backup': }@
+
+* Preparing an USB hard-disk for encrypted backups
+
+Plug-in any suitable USB-hard disk. Running @dmesg | tail@ should give you an idea about the hard disk partition to use. 
+We assume /dev/sda1 here. Run @/usr/local/bin/backup_encrypted.sh --device /dev/sda1@. This may take a long time (over an hour).
+Many minutes will be needed to collect enough entropy to create the /etc/id.encryptd keyfile. $
+Once this step is complete, you will be asked to confirm erasing the desired partition. Enter YES as prompted.
+Formatting a the hard disk is also time consuming.
+
+h2. Standalone use
+
+As using Puppet to manage a rasperry PI might be an overkill there is helper script which installs the scripts into /usr/local/bin
+
+h3. Prerequisites for standalone
+
+bq. sudo aptitude install git cryptsetup ruby
+git clone http://github.com/ngiger/puppet-luks_backup luks_backup
+cd luks_backup
+sudo ./install_into_user_local_bin
+    
+h2. License
+
+Copyright 2014, niklaus.giger@member.fsf.org
+
+This program is free software; you can redistribute  it and/or modify it under the terms of the GNU General Public License version 3 as published by 
+the Free Software Foundation.
+
