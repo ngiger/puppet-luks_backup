@@ -5,6 +5,8 @@ Dieses Projekt hat zwei Ziele:
 a) Auf einem Rasperry PI auf einfache Weise Backups von einem anderen PC (Linux mit Debian) zu ziehen und auf einer verschlüsselten Partition zu speichern.
 b) Als Teil des Elexis-Admin Projektes Snapshots aller relevanten Verzeichnisse zu ziehen
 
+Als Backup-Tool wird rsnapshot verwendet. Weshalb? Gemäss dem "Lennarts Blog":http://blog.karssen.org/2013/01/04/comparing-rsnapshot-and-obnam-for-scheduled-large-backups/ ist rsnapshot viel schneller als obnam (das andere Werkzeug, das ich untersucht habe). Und es ist gut zu wissen, dass unsere Lösung auch mit 6.5 TB noch laufen würde. Andere Tools, wie Amanda oder Bacula empfand ich als Overkill für mein Problem, die Daten einer Arztpraxis zu sichern.
+
 h2. Voraussetzungen
 
 Im folgende wird als Beispiel für einen Server, dessen Dateien gesichert werden müssen, der Name praxis.schoenbucher.ch verwendet.
