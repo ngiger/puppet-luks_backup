@@ -1,0 +1,14 @@
+# Sollte klar sein weshalb
+/home/ungesichert
+ungesichert
+# exclude RVM (Niklaus hat damit verschiedenen Ruby-Installation zur Verfügung)
+*/.rvm
+.rvm
+# (Niklaus) exclude maven repository cache
+*/.m2
+.m2
+*/.thumbnails
+.thumbnails
+# nepomok ist die KDE Datenbank. Wird rasch gross und kann wieder neu erzeugt werden. Deshalb überspringen
+*/.kde/share/apps/nepomuk
+.kde/share/apps/nepomuk

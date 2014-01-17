@@ -1,0 +1,88 @@
+h1. luks_backup
+
+Dieses Projekt hat zwei Ziele:
+
+a) Auf einem Rasperry PI auf einfache Weise Backups von einem anderen PC (Linux mit Debian) zu ziehen und auf einer verschlüsselten Partition zu speichern.
+b) Als Teil des Elexis-Admin Projektes Snapshots aller relevanten Verzeichnisse zu ziehen
+
+h2. Voraussetzungen
+
+Im folgende wird als Beispiel für einen Server, dessen Dateien gesichert werden müssen, der Name praxis.schoenbucher.ch verwendet.
+
+Wir gehen davon aus,
+
+# dass auf dem PC (praxis.schoenbucher.ch), der Benutzer backup Lese-Zugriffe auf alle Dateien hat.
+# dass vom Rasperry PI aus der Root-Benutzer ohne Password auf host@example zugreifen kann. Deshalb gibt es u.a. im /etc/group folgende Einträge
+## sbu:x:1000:backup_encrypted
+
+h2. Ausetzen des Rasperry-PI
+
+* Zuerst installieren wir noch einige benötigte Programme. Dazsu @sudo apt-get install git cryptsetup ruby anacron@ aufrufen.
+* Danach kopieren wir eine Kopie dieses Projektes. Dazu @git clone https://github.com/ngiger/puppet-luks_backup /home/pi/luks_backup@.
+* Einige Dateien (mount_encrypted.sh, umount_encrypted.sh) müssen /usr/local/bin kopiert werden, dazu @sudo /home/pi/luks_backup/install_into_user_local_bin@ aufrufen.
+* Leeren USB-Stick oder leere USB-Festplatte einstecken. Feststellen, welche Festplatte-ID gebraucht @dmesg | tail@, wahrscheinlich /dev/sda oder /dev/sda1. Wir nehmen an, dass sie richtig partitioniert ist.
+* Mit dem Befehl @/usr/local/bin/backup_encrypted.sh --iniit --device /dev/sda1@ wird die Datei /etc/backup.key zum Verschlüsseln der Festplatte erstellt, falls dies notwendig ist. Dies geht mehrere Minuten (bis zu einer). Nachher wird die Partition neu formattiert, dazu müssen sie einmal "YES" angegeben, wenn Sie dazu aufgeforrdert werden. Das Formattieren kann bein einer TB-Festplatte locker länger als eine Stunde gehen.
+* Die Schlüsseldateien /etc/backup.ssh und /etc/backup.ssh.pub für das Einloggen von root-Benutzer des PI als Benutze backup des PC werden wie folgt erstellt. @sudo ssh-keygen -f /etc/backup.ssh@. Zweimal Return drücken, um ein leeres Password zu erzeugen
+* Jetzt muss der Inhalt Datei der Datei /etc/backup.ssh.pub nach praxis.schoenbucher.ch kopiert werden. Dazu wird ihr Inhalt mit @cat  /etc/backup.ssh.pub@ ausgelesen.
+* Einloggen nach praxis.schoenbucher.ch und @sudo mkdir /var/backups/.ssh && sudo touch /var/backups/.ssh/authorized_keys@ eingeben, nachdem kontrolliert wurde, dass var/backups das Home-Verzeichnis des Benutzers backup ist.
+* Die Datei /var/backups/.ssh/authorized_keys als Root-Benutzer öffnen und eine neue Zeile mit dem Inhalt der Datei /etc/backup.ssh.pub (des Rasperry) einfügen. Dieser Zeile "ssh-rsa " vorstellen.
+* Benutzer und Zugriffsrechte richtigstellen mit folgenden Befehlen @sudo chown -R backup:backup /var/backups/.ssh && sudo chmod 0600 /var/backups/.ssh/authorized_keys@
+* Zurückkehren auf den Rasperry PI und kontrollieren, dass man mit @sudo -u root ssh -p 4444 -i /etc/backup.ssh praxis.schoenbucher.ch@ auf den PC praxis.schoenbucher.ch einloggen kann. (ggf. die Option -p für Port anpassen).
+
+h3. Testen des Backups
+
+Die Datei /home/pi/luks_backup/files/rsnapshot.conf.prxserver nach /etc kopieren und ggf. anpassen. Es empfiehlt sich zuerst nicht alle /home-Verzeichnisse, sondern nur z.B. diejenigen des Benutzers sbu zu sichern.
+
+Den Befehl @sudo rsnapshot -c /etc/rsnapshot.conf.prxserver hourly@ ausführen und Ausgabe auf Fehler kontrollieren. Ggf.  Probleme wegen Zugriffsrechten lösen.
+
+h3. Automatisches Sichern
+
+Es empfiehlt sich, das Sichern zu automatisieren, damit Sie die Sicherung nicht jeden Tag anstossen müssen.
+
+Mittels des Befehls @sudo crontab -e@ folgende Zeilen anfügen. Achtung: Die Reihenfolge ist wichtig!! (in absteigender Reihenfolge der Häufigkeit):
+
+bc. 0 */4 * * * /usr/bin/rsnapshot -c /etc/rsnapshot.conf.prxserver hourly
+50 23 * * * /usr/bin/rsnapshot -c /etc/rsnapshot.conf.prxserver daily
+40 23 * * 6 /usr/bin/rsnapshot -c /etc/rsnapshot.conf.prxserver weekly
+30 23 1 * * /usr/bin/rsnapshot -c /etc/rsnapshot.conf.prxserver monthly
+20 23 1 1 * /usr/bin/rsnapshot -c /etc/rsnapshot.conf.prxserver yearly
+
+um folgendes Backup-Schema zu realiseren
+
+# 6 stündliche Backup jeden Tag, jeweils um 0,4,8,12,16,20 Uhr
+# 1 täglichen Backup  um 23 Uhr 50
+# 1 wöchentlichen Backup, am 6 Tag der Woche (Samstag) um 23 Uhr 40
+# 1 monatlichen Backup, jeweils am 1 Tag des Monats um 23 Uhr 30
+# 1 jährlichen Backup, jeweils am 1.1 um 23 Uhr 20
+
+Obige Operationen müssen für jede PC wiederholt werden, welcher gesichert werden muss.
+
+Am nächsten Tag und in regelmässigen Abständen die Datei /var/log/rsnapshot.log überprüfen, ob der Backup wirklich durchlief. Regelmässig testen, ob eine Datei, mit welcher man gestern gearbeitet hat, auch richtig in der Sicherheitskopie vorhanden ist.
+
+h2. Sicherheit
+
+Ich empfehle folgende Einstellungen unter /etc/sshd_config zu setzen
+# AllowUsers backup sbu
+# PermitRootLogin no
+
+h2. Offene Probleme
+
+Von Dateien, auf welchen der Benutzer backup keine Zugriff hat, werden keine Kopien gezogen. Dies sind z.B.
+# ~/.ssh/id_rsa
+# ~/.kde/share/config/* (Viele, nicht alle)
+
+
+h2. Gebrauch als Puppet-Modul für https://github.com/ngiger/elexis-vagrant
+
+* To install the luks_backup:
+
+    @class { 'luks_backup': }@
+
+Als Backup-Zielordner wird die Hiera-Variable luks_backup::backup_dir mit dem Vorgabewert /backup genommen.
+
+h2. License
+
+Copyright 2014, niklaus.giger@member.fsf.org
+
+This program is free software; you can redistribute  it and/or modify it under the terms of the GNU General Public License version 3 as published by the Free Software Foundation.
+
