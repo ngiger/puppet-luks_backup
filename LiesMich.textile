@@ -13,10 +13,11 @@ Wir gehen davon aus,
 
 # dass auf dem PC (praxis.schoenbucher.ch), der Benutzer backup Lese-Zugriffe auf alle Dateien hat.
 # dass vom Rasperry PI aus der Root-Benutzer ohne Password auf host@example zugreifen kann. Deshalb gibt es u.a. im /etc/group folgende Einträge
-## sbu:x:1000:backup_encrypted
+## @sbu:x:1000:backup_encrypted@
 
-h2. Ausetzen des Rasperry-PI
+h2. Aufsetzen des Rasperry-PI
 
+* Raspbian muss auf dem Rasperry-PI installiert sein. Für andere Distributionen müssen die Anleitung entsprechend anpassen.
 * Zuerst installieren wir noch einige benötigte Programme. Dazsu @sudo apt-get install git cryptsetup ruby anacron@ aufrufen.
 * Danach kopieren wir eine Kopie dieses Projektes. Dazu @git clone https://github.com/ngiger/puppet-luks_backup /home/pi/luks_backup@.
 * Einige Dateien (mount_encrypted.sh, umount_encrypted.sh) müssen /usr/local/bin kopiert werden, dazu @sudo /home/pi/luks_backup/install_into_user_local_bin@ aufrufen.
