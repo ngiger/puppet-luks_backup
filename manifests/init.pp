@@ -57,6 +57,7 @@ no_create_root	1
 backup	/home/		localhost/
 backup	/etc/		localhost/
 backup	/usr/local/	localhost/
+backup  /etc/puppet/hieradata localhost/
 ",
 	require => Package['anacron', 'rsnapshot', 'cryptsetup'],
 	}
