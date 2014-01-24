@@ -62,7 +62,7 @@ def initEncryptedDisk(opts)
     puts "Not creating the keyfile as #{opts[:keyfile]} is #{File.size(opts[:keyfile])} bytes long."
   else
     system("dd if=/dev/random of=#{opts[:keyfile]} bs=1 count=4096")
-    system("chmod 0644 #{opts[:keyfile]}"
+    system("chmod 0644 #{opts[:keyfile]}")
   end
   system("cryptsetup --key-file #{opts[:keyfile]} luksFormat #{opts[:device]} -c aes -s 256 -h sha256")
   system("cryptsetup luksOpen --key-file #{opts[:keyfile]} #{opts[:device]} #{opts[:mountId]}")

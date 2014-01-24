@@ -1,6 +1,5 @@
 #!/bin/dash -v
 dest=/usr/local/bin
 sudo cp -p files/backup_encrypted.rb $dest
-# sudo cp -p files/backup_system.sh    /etc/cron.daily
 sudo cp -p files/mount_encrypted.sh  $dest
 sudo cp -p files/umount_encrypted.sh $dest

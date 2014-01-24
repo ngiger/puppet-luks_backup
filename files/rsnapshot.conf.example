@@ -1,0 +1,28 @@
+# Beispiel für die Konfiguration eines Backup
+config_version	1.2
+cmd_cp		/bin/cp
+cmd_rm		/bin/rm
+cmd_rsync	/usr/bin/rsync
+cmd_logger	/usr/bin/logger
+cmd_ssh	/usr/bin/ssh
+# Between -i and /etc we must have space and not a tab!
+ssh_args	-i /etc/backup.ssh
+cmd_preexec	/usr/local/bin/mount_encrypted.sh
+cmd_postexec	/usr/local/bin/umount_encrypted.sh
+lockfile		/var/run/rsnapshot.pid
+logfile	/var/log/rsnapshot.log
+rsync_short_args	-az
+snapshot_root	/mnt/encrypted
+no_create_root	1
+
+retain	hourly	6
+retain	daily	7
+retain	weekly	4
+retain	monthly	12
+
+exclude_file	/etc/rsync.exclude
+
+backup	backup@praxis.schoenbucher.ch:/etc/.git	praxis.schoenbucher.ch/debian/
+
+# Backup from a server reached via ssh port 1234
+#backup	backup@praxis.schoenbucher.ch:/etc/.git	praxis.schoenbucher.ch/debian/	+ssh_args=-p 1234

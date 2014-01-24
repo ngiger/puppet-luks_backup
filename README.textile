@@ -15,14 +15,6 @@ h2. Examples
 
     @class { 'luks_backup': }@
 
-* Preparing an USB hard-disk for encrypted backups
-
-Plug-in any suitable USB-hard disk. Running @dmesg | tail@ should give you an idea about the hard disk partition to use. 
-We assume /dev/sda1 here. Run @/usr/local/bin/backup_encrypted.sh --device /dev/sda1@. This may take a long time (several hours).
-Many minutes will be needed to collect enough entropy to create the /etc/id.encryptd keyfile. $
-Once this step is complete, you will be asked to confirm erasing the desired partition. Enter YES as prompted.
-Formatting a the hard disk is also time consuming.
-
 h2. Standalone use
 
 As using Puppet to manage a rasperry PI might be an overkill there is helper script which installs the scripts into /usr/local/bin
@@ -43,6 +35,15 @@ bc. sudo ssh-keygen -f /etc/backup.ssh # Don't enter a passphrase
 sudo ssh-copy-id backup_user@server.exampl.com # or copy the content of /etc/backup.ssh.pub to the ~/.ssh/authorized_keys file
 # sudo ssh -i /etc/backup.ssh -p 3333 niklaus@praxis.schoenbucher.ch 
 
+h3.Preparing an USB hard-disk for encrypted backups
+
+Plug-in any suitable USB-hard disk. Running @dmesg | tail@ should give you an idea about the hard disk partition to use.
+We assume /dev/sda1 here. Run @/usr/local/bin/backup_encrypted.sh --device /dev/sda1@. This may take a long time (several hours).
+
+Many minutes will be needed to collect enough entropy to create the /etc/id.encryptd keyfile. $
+Once this step is complete, you will be asked to confirm erasing the desired partition. Enter YES as prompted.
+Formatting the hard disk is also time consuming. Afterwards you should run the following commands @sudo chown root:backup /etc/backup.key && sudo chmod 0600 /etc/backup.key@
+
 h3. Running the backup automatically
 
 It might be a good idee to create a file @/etc/cron.daily/backup_from_remote_server@ with the following content
@@ -50,8 +51,11 @@ It might be a good idee to create a file @/etc/cron.daily/backup_from_remote_ser
 bc. sudo -i /usr/local/bin/backup_encrypted.rb --ssh backup_user@server.exampl.com /home > /dev/null 2>&1
 sudo rsync --delete --exclude ungesichert -avzbe ssh -i /etc/backup.ssh -p 3333 niklaus@praxis.schoenbucher.ch:/home/niklaus /mnt/encrypted/backup/niklaus --backup-dir=/mnt/encrypted/backup/old
 
-
 This will ensure that desired directories are backuped regularly.
+
+h3. Checking
+
+In the file @/var/log/rsnapshot.log@ you will find the log of all backups.
 
 install rsnapshot
 /home/samba
