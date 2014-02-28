@@ -1,5 +1,7 @@
 h1. luks_backup module for Puppet
 
+German version is in the File "LiesMich.textile":LiesMich.textile
+
 Puppet module for running encrypted backup via ssh to a Rasperry PI
 
 # https://github.com/bup/bup
@@ -21,18 +23,20 @@ As using Puppet to manage a rasperry PI might be an overkill there is helper scr
 
 h3. Prerequisites for standalone
 
-bc. sudo aptitude install git cryptsetup ruby anacron
+bc. sudo aptitude update
+sudo aptitude safe-upgrade
+sudo aptitude install git cryptsetup ruby anacron rsnapshot
 git clone https://github.com/ngiger/puppet-luks_backup luks_backup
 cd luks_backup
 sudo ./install_into_user_local_bin
 
 h3. Prerequisites for standalone backup from remove server via ssh
 
-We assume that we want to backup from a remote server using using the username backup_user via rsync and ssh.  backup_user@server.exampl.com.
+We assume that we want to backup from a remote server using using the username backup via rsync and ssh.  backup@server.exampl.com.
 We will use the root user to be able to run the backup in cron job.
 
 bc. sudo ssh-keygen -f /etc/backup.ssh # Don't enter a passphrase
-sudo ssh-copy-id backup_user@server.exampl.com # or copy the content of /etc/backup.ssh.pub to the ~/.ssh/authorized_keys file
+sudo ssh-copy-id backup@server.exampl.com # or copy the content of /etc/backup.ssh.pub to the ~/.ssh/authorized_keys file
 # sudo ssh -i /etc/backup.ssh -p 3333 niklaus@praxis.schoenbucher.ch 
 
 h3.Preparing an USB hard-disk for encrypted backups
@@ -48,7 +52,7 @@ h3. Running the backup automatically
 
 It might be a good idee to create a file @/etc/cron.daily/backup_from_remote_server@ with the following content
 
-bc. sudo -i /usr/local/bin/backup_encrypted.rb --ssh backup_user@server.exampl.com /home > /dev/null 2>&1
+bc. sudo -i /usr/local/bin/backup_encrypted.rb --ssh backup@server.exampl.com /home > /dev/null 2>&1
 sudo rsync --delete --exclude ungesichert -avzbe ssh -i /etc/backup.ssh -p 3333 niklaus@praxis.schoenbucher.ch:/home/niklaus /mnt/encrypted/backup/niklaus --backup-dir=/mnt/encrypted/backup/old
 
 This will ensure that desired directories are backuped regularly.

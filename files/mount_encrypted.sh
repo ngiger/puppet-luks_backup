@@ -1,5 +1,6 @@
 #!/bin/bash
 # Managed by puppet (private repo https://github.com/ngiger/vagrant-ngiger)
+set -e
 blkid -tTYPE=crypto_LUKS -l -o device /dev/s*
 export device=`blkid -tTYPE=crypto_LUKS -l -o device /dev/s*`
 #echo Device of encrypted harddisk is $device
