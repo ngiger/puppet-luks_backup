@@ -40,7 +40,7 @@ class luks_backup(
 	file { "$backup_dir/postgresql": ensure => directory, require => File["$backup_dir"] }
 	file { "$backup_dir/mysql":      ensure => directory, require => File["$backup_dir"] }
 
-	notify{"crate $create_crontab":}
+	notify{"create_crontab? $create_crontab":}
 	if ("$create_crontab" == "true") {
 	notify{"cfg $conf_file":}
 	$conf_file      = '/etc/rsnapshot.conf.localhost'
