@@ -13,7 +13,9 @@ Puppet module for running encrypted backup via ssh to a Rasperry PI
 
 h2. Graphische Oberfläche
 
-After installing the program as described below you will can have a "graphical interface":images/Overview.png which might include the following actions
+After installing the program as described below you will can have a graphical interface which might include the following actions
+!images/Overview.png!
+
 * Mount the encrypted harddisk
 * Unmount the encrypted harddisk
 * Start the daily backup with default setting

@@ -19,7 +19,10 @@ Nachteile:
 
 h2. Graphische Oberfläche
 
-  Nachdem Sie das Programm wie unten installiert haben, stehen Ihnen in der "graphischen Oberfläche":images/Overview.png folgende Icons zur Verfügung:
+  Nachdem Sie das Programm wie unten installiert haben, stehen Ihnen in der graphischen Oberfläche folgende Icons zur Verfügung:
+
+!images/Overview.png!
+
 * Einhängen Schlüssel-HD
 * Aushängen Schlüssel-HD
 * Backup-Starten
