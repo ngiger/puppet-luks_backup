@@ -1,0 +1,19 @@
+[Desktop Entry]
+# $Id: wireshark.desktop 39670 2011-10-30 14:24:29Z rbalint $
+# The format of this file is specified at
+# http://freedesktop.org/Standards/desktop-entry-spec
+# The entries are in the order they are listed in version 1.0
+Version=1.0
+Type=Application
+Name=Mount encrypted harddisk
+Name[de]=Einhängen Schlüssel-HD
+GenericName=Mount encrypted harddisk
+GenericName[de]=Verschlüsselte Festplatten öffnen
+Comment=Mount encrypted harddisk
+Comment[de]=Verschlüsselte Festplatten öffnen
+Icon=Newrsynclogo.png
+Exec=/usr/bin/gksu /usr/local/bin/mount_encrypted.sh
+Terminal=false
+Categories=Utility;
+Encoding=UTF-8
+

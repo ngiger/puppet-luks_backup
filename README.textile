@@ -11,21 +11,21 @@ Puppet module for running encrypted backup via ssh to a Rasperry PI
 # PasswordAuthentication no
 # PermitRootLogin without_password
 
-h2. Examples
+h2. Graphische Oberfläche
 
-* To install the luks_backup:
+After installing the program as described below you will can have a "graphical interface":images/Overview.png which might include the following actions
+* Mount the encrypted harddisk
+* Unmount the encrypted harddisk
+* Start the daily backup with default setting
 
-    @class { 'luks_backup': }@
+After running "Mount encrypted HD" you may consult under /mnt/encrypted/snapshot the saved files. 0 denotes the most recent backup.
 
-h2. Standalone use
 
-As using Puppet to manage a rasperry PI might be an overkill there is helper script which installs the scripts into /usr/local/bin
+h3. Prerequisites
 
-h3. Prerequisites for standalone
-
-bc. sudo aptitude update
-sudo aptitude safe-upgrade
-sudo aptitude install git cryptsetup ruby anacron rsnapshot
+bc. sudo apt-get update
+sudo apt-get safe-upgrade
+sudo apt-get install git util-linux cryptsetup ruby anacron rsnapshot
 git clone https://github.com/ngiger/puppet-luks_backup luks_backup
 cd luks_backup
 sudo ./install_into_user_local_bin
@@ -39,10 +39,12 @@ bc. sudo ssh-keygen -f /etc/backup.ssh # Don't enter a passphrase
 sudo ssh-copy-id backup@server.exampl.com # or copy the content of /etc/backup.ssh.pub to the ~/.ssh/authorized_keys file
 # sudo ssh -i /etc/backup.ssh -p 3333 niklaus@praxis.schoenbucher.ch 
 
-h3.Preparing an USB hard-disk for encrypted backups
+You must also add a line "AllowUsers backup" to /etc/ssh/sshd_config.
+
+h3. Preparing an USB hard-disk for encrypted backups
 
 Plug-in any suitable USB-hard disk. Running @dmesg | tail@ should give you an idea about the hard disk partition to use.
-We assume /dev/sda1 here. Run @/usr/local/bin/backup_encrypted.sh --device /dev/sda1@. This may take a long time (several hours).
+We assume /dev/sda1 here. Run @/usr/local/bin/backup_encrypted.rb --init --device /dev/sda1@. This may take a long time (several hours).
 
 Many minutes will be needed to collect enough entropy to create the /etc/id.encryptd keyfile. $
 Once this step is complete, you will be asked to confirm erasing the desired partition. Enter YES as prompted.
@@ -50,12 +52,12 @@ Formatting the hard disk is also time consuming. Afterwards you should run the f
 
 h3. Running the backup automatically
 
-It might be a good idee to create a file @/etc/cron.daily/backup_from_remote_server@ with the following content
+Using @sudo crontab -e@ add the following lines. Be aware that the interval is important. Also remark that after the last work (daily backup) we will shutdown the raspberry
 
-bc. sudo -i /usr/local/bin/backup_encrypted.rb --ssh backup@server.exampl.com /home > /dev/null 2>&1
-sudo rsync --delete --exclude ungesichert -avzbe ssh -i /etc/backup.ssh -p 3333 niklaus@praxis.schoenbucher.ch:/home/niklaus /mnt/encrypted/backup/niklaus --backup-dir=/mnt/encrypted/backup/old
-
-This will ensure that desired directories are backuped regularly.
+bc. .50 23 * * * /usr/local/bin/run_encrypted_snapshot.rb /etc/rsnapshot.conf.prxserver daily --shutdown
+40 23 * * 4 /usr/local/bin/run_encrypted_snapshot.rb /etc/rsnapshot.conf.prxserver weekly
+30 23 1 * * /usr/local/bin/run_encrypted_snapshot.rb /etc/rsnapshot.conf.prxserver monthly
+20 23 1 1 * /usr/local/bin/run_encrypted_snapshot.rb /etc/rsnapshot.conf.prxserver yearly
 
 h3. Checking
 
@@ -65,10 +67,13 @@ install rsnapshot
 /home/samba
 /backup/postgresql/
 
-sshd_config
-PermitRootLogin no
-AllowUsers backup niklaus sbu
+h3. Security
 
+* Change the password of the default Rasbian user pi (@sudo passwd pi@) or delete it (@sudo deluser pi@)
+* Add a new user (@adduser myUserName@)
+* Change /etc/sshd_config zu include
+# AllowUsers myUserName anotherUserName
+# PermitRootLogin no
 
 h2. License
 

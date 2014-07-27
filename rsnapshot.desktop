@@ -1,0 +1,23 @@
+[Desktop Entry]
+# $Id: wireshark.desktop 39670 2011-10-30 14:24:29Z rbalint $
+# The format of this file is specified at
+# http://freedesktop.org/Standards/desktop-entry-spec
+# The entries are in the order they are listed in version 1.0
+Type=Application
+Version=1.0
+Name=Mount encrypted harddisk
+Name[de]=Backup-Starten
+GenericName=Mount encrypted harddisk
+GenericName[de]=GenericName: Verschlüsselte Festplatten öffnen
+Comment=Mount encrypted harddisk
+Comment[de]=Commet: Verschlüsselte Festplatten öffnen
+# Icon=Newrsynclog
+Icon=debian-reference.png
+Exec=xxx
+Terminal=true
+# Categorie entry according to version 1.0 of
+# http://www.freedesktop.org/wiki/Specifications/menu-spec
+Categories=Utility;
+Encoding=UTF-8
+# Icon from http://upload.wikimedia.org/wikipedia/en/1/11/Newrsynclogo.png
+# /usr/share/icons/hicolor/256x256/apps/Newrsynclogo.png

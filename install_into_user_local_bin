@@ -4,4 +4,6 @@ sudo cp -p files/rsync.exclude /etc
 sudo cp -p files/backup_encrypted.rb $dest
 sudo cp -p files/mount_encrypted.sh  $dest
 sudo cp -p files/umount_encrypted.sh $dest
-# sudo mkdir -p /mnt/encrypted
+sudo cp -p files/Newrsynclogo.png         /usr/share/icons/hicolor/256x256/apps/Newrsynclogo.png
+sudo cp -p files/*.desktop  $HOME/Desktop
+echo "file:///mnt/encrypted/snapshots snapshots" > $HOME/.gtk-bookmarks
