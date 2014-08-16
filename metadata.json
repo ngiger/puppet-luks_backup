@@ -1,0 +1,14 @@
+{
+  "name": "ngiger/luks_backup",
+  "version": "0.1.0",
+  "author": "ngiger",
+  "summary": "Puppet module for running encrypted backup via ssh to a Rasperry PI",
+  "license": "GNU General Public License v3 or Later (GPLv3+)",
+  "source": "http://github.com/ngiger/puppet-luks_backup",
+  "project_page": "https://github.com/ngiger/elexis-admin/wiki",
+  "issues_url": "https://github.com/ngiger/puppet-luks_backup/issues",
+  "description": "Low cost backup solution",
+  "dependencies": [
+  
+  ]
+}
