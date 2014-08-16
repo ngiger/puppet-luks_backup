@@ -13,7 +13,7 @@ Comment=Mount encrypted harddisk
 Comment[de]=Commet: Verschlüsselte Festplatten öffnen
 # Icon=Newrsynclog
 Icon=debian-reference.png
-Exec=mount_encrypted.sh
+Exec=/usr/bin/gksu /usr/local/bin/mount_encrypted.sh && xmessage "Mounted /mnt/encrypted. See `df -hT /mnt/encrypted`"
 Terminal=true
 # Categorie entry according to version 1.0 of
 # http://www.freedesktop.org/wiki/Specifications/menu-spec
