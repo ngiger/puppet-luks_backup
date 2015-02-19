@@ -28,25 +28,25 @@
 # Copyright 2014 Niklaus Giger niklaus.giger@member.fsf.org
 #
 class luks_backup(
-	$ensure         = false,
-	$backup_dir     = hiera('luks_backup::backup_dir', '/backup'),
-	$create_crontab = hiera('luks_backup::create_crontab',  'true'), # if nothing given we will create a /etc/rsnapshot.conf.localhost
-) {
-	if ( "$ensure" == true or "$ensure" == present) {
-	ensure_packages['anacron', 'rsnapshot', 'cryptsetup']
-	file { '/usr/local/bin/mount_encrypted.sh':  source => 'puppet:///modules/luks_backup/mount_encrypted.sh' }
-	file { '/usr/local/bin/umount_encrypted.sh': source => 'puppet:///modules/luks_backup/umount_encrypted.sh' }
-	file { '/usr/local/bin/backup_encrypted.rb': source => 'puppet:///modules/luks_backup/backup_encrypted.rb' }
-	file { $backup_dir: ensure => directory }
-	file { "$backup_dir/postgresql": ensure => directory, require => File["$backup_dir"] }
-	file { "$backup_dir/mysql":      ensure => directory, require => File["$backup_dir"] }
+  $ensure         = false,
+  $backup_dir     = hiera('luks_backup::backup_dir', '/backup'),
+  $create_crontab = hiera('luks_backup::create_crontab',  true), # if nothing given we will create a /etc/rsnapshot.conf.localhost
+  ) {
+  if ( $ensure == true or $ensure == present) {
+  ensure_packages['anacron', 'rsnapshot', 'cryptsetup']
+  file { '/usr/local/bin/mount_encrypted.sh':  source => 'puppet:///modules/luks_backup/mount_encrypted.sh' }
+  file { '/usr/local/bin/umount_encrypted.sh': source => 'puppet:///modules/luks_backup/umount_encrypted.sh' }
+  file { '/usr/local/bin/backup_encrypted.rb': source => 'puppet:///modules/luks_backup/backup_encrypted.rb' }
+  file { $backup_dir: ensure => directory }
+  file { "${backup_dir}/postgresql": ensure => directory, require => File[$backup_dir] }
+  file { "${backup_dir}/mysql":      ensure => directory, require => File[$backup_dir] }
 
-	if ("$create_crontab" == "true") {
-	$conf_file      = '/etc/rsnapshot.conf.localhost'
-	file {"$conf_file":
-	content => "
+  if ($create_crontab == true) {
+  $conf_file      = '/etc/rsnapshot.conf.localhost'
+  file {$conf_file:
+  content => "
 config_version	1.2
-snapshot_root	$backup_dir
+snapshot_root	${backup_dir}
 cmd_cp		/bin/cp
 cmd_rm		/bin/rm
 cmd_rsync	/usr/bin/rsync
@@ -58,39 +58,40 @@ verbose		2
 loglevel	3
 lockfile	/var/run/rsnapshot.pid
 no_create_root	1
-backup	$backup_dir/postgresql	db_snapshots/
-backup	$backup_dir/mysql	db_snapshots/
+backup	${backup_dir}/postgresql	db_snapshots/
+backup	${backup_dir}/mysql	db_snapshots/
 backup	/home/		localhost/
 backup	/etc/		localhost/
 backup	/usr/local/	localhost/
 backup	/etc/puppet/hieradata	localhost/
 ",
-	require => Package['anacron', 'rsnapshot', 'cryptsetup'],
-	}
+  require => Package['anacron', 'rsnapshot', 'cryptsetup'],
+  }
   cron { 'hourly':
-      command => "/usr/bin/rsnapshot -q -c $conf_file hourly",
-      hour    => [0,4,8,12,16,20], minute  => 0,
-      require => File[$conf_file],
+    command =>  "/usr/bin/rsnapshot -q -c ${conf_file} hourly",
+    hour    =>  [0,4,8,12,16,20],
+    minute  =>  0,
+    require =>  File[$conf_file],
   }
   cron { 'daily':
-      command => "/usr/bin/rsnapshot -q -c $conf_file daily",
-      hour    => "23", minute  => 50,
-      require => File[$conf_file],
+    command => "/usr/bin/rsnapshot -q -c ${conf_file} daily",
+    hour    => 23, minute  => 50,
+    require => File[$conf_file],
   }
   cron { 'weekly':
-      command => "/usr/bin/rsnapshot -q -c $conf_file weekly",
-      hour    => "23", minute  => 40,  weekday => 'saturday',
-      require => File[$conf_file],
+    command => "/usr/bin/rsnapshot -q -c ${conf_file} weekly",
+    hour    => 23, minute  => 40,  weekday => 'saturday',
+    require => File[$conf_file],
   }
   cron { 'monthly':
-      command => "/usr/bin/rsnapshot -q -c $conf_file monthly",
-      hour    => "23", minute  => 30, monthday => 1,
-      require => File[$conf_file],
+    command => "/usr/bin/rsnapshot -q -c ${conf_file} monthly",
+    hour    => 23, minute  => 30, monthday => 1,
+    require => File[$conf_file],
   }
   cron { 'yearly':
-      command => "/usr/bin/rsnapshot -q -c $conf_file yearly",
-      hour    => "23", minute  => 20, monthday => 1, month => 1,
-      require => File[$conf_file],
+    command => "/usr/bin/rsnapshot -q -c ${conf_file} yearly",
+    hour    => 23, minute  => 20, monthday => 1, month => 1,
+    require => File[$conf_file],
   }
 }
 }
