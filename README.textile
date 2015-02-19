@@ -69,6 +69,15 @@ install rsnapshot
 /home/samba
 /backup/postgresql/
 
+
+h3. Running the spec tests
+
+bundle exec rake spec_clean spec_prep # once
+bundle exec rake spec_standalone # all spec tests
+bundle exec rspec spec/classes/init_spec.rb # a specific test
+
+To find missing classes/etc I often uncomment the line @# at_exit { RSpec::Puppet::Coverage.report! }@ in spec/spec_helpers.rb
+
 h3. Security
 
 * Change the password of the default Rasbian user pi (@sudo passwd pi@) or delete it (@sudo deluser pi@)
